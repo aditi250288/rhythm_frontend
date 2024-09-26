@@ -1,3 +1,6 @@
+import {useState} from "react";
+// eslint-disable-next-line
+import {Howl, Howler} from 'howler';
 import image1 from "../assets/images/image1.png";
 import IconText from "../components/shared/iconText";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -88,10 +91,46 @@ const SoundOfIndiaCardsData = [
 ];
 
 const LoggedInHomeComponent = () => {
-  <div></div>
+  const [soundPlayed, setSoundPlayed] = useState (null);
+   // eslint-disable-next-line
+  const[isPaused, setIsPaused] = useState (true);
+// eslint-disable-next-line
+  const playSound = (songSrc) => {
+    if (soundPlayed) {
+      soundPlayed.stop();
+    }
+    let newSound = new Howl({
+      src: [songSrc],
+      html5: true,
+    });
+    setSoundPlayed(newSound);
+    newSound.play();
+  };
+  const pauseSound = ()=>{
+    soundPlayed.pause();
+  }
+   // eslint-disable-next-line
+  const togglePlayPause = () => {
+    if (isPaused) {
+      if (!soundPlayed) {
+        playSound (
+          "https://res.cloudinary.com/dlkl4ek0w/video/upload/v1727242819/xqtcpynozqp0nd9zidrt.mp3"
+        );
+      } else {
+        soundPlayed.play();
+    }
+    setIsPaused(false);
+  } else {
+    pauseSound();
+    setIsPaused(true);
+  }
+}
   return (
-    <div className="h-full w-full flex">
+    <div className="h-full w-full bg-app-black">
+      <div className="h-9/10 w-full flex">
+      
       {/* This first div will be the left panel */}
+      
       <div className="h-full w-1/5 bg-black flex flex-col justify-between pb-10">
         {/* This div is for logo */}
         <div>
@@ -170,6 +209,59 @@ const LoggedInHomeComponent = () => {
         </div>
       </div>
     </div>
+
+      {/*this div is current playing song*/}
+      <div className="w-full h-1/10 bg-app-black bg-opacity-30 text-white flex items-center px-4">
+      <div className="w-1/4 flex items-center"> 
+      <img 
+      src= "https://images.unsplash.com/photo-1513689125086-6c432170e843?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+      alt="currentSongThumbnail"
+      className="h-14 w-14 rounded"
+      />
+      <div className="pl-4">
+      <div className="text-sm hover:underline cursor-pointer">Moh moh ke dhage</div>
+      <div className="text-xs text-gray-500 hover:underline cursor-pointer">Papon</div>
+      
+      </div>
+      </div>
+      <div className="w-1/2 flex justify-center h-full flex-col items-center">
+      <div className="flex w-1/3 justify-between items-center">
+        {/*controls for the playing songs will go here*/}
+        <Icon 
+        icon="fluent:arrow-shuffle-32-filled" 
+        fontSize={30} 
+        className="cursor-pointer text-gray-500 hover:text-white"
+        />
+        <Icon 
+        icon="fluent:previous-16-filled" 
+        fontSize={30} 
+        className="cursor-pointer text-gray-500 hover:text-white"
+        />
+        <Icon 
+        icon={isPaused ? "mdi:play-box":"mdi:pause-box"}
+        fontSize={40} 
+        className="cursor-pointer text-gray-500 hover:text-white"
+        onClick={togglePlayPause}
+        />
+        <Icon 
+        icon="fluent:next-16-filled" 
+        fontSize={30} 
+        className="cursor-pointer text-gray-500 hover:text-white"
+        />
+        <Icon 
+        icon="pepicons-pop:repeat" 
+        fontSize={30} 
+        className="cursor-pointer text-gray-500 hover:text-white"
+        />
+        
+      </div>
+      {/*<div>progress bar here</div>*/}
+
+      </div>
+      <div className="w-1/4 flex justify-end">Hello</div>
+    </div>
+  </div>
+
   );
 };
 
@@ -196,21 +288,17 @@ const PlaylistView = ({ titleText, cardsData }) => {
   );
 };
 
-const Card = ({title, description, imgUrl}) => {
+const Card = ({ title, description, imgUrl }) => {
   return (
-      <div className="bg-black bg-opacity-40 w-1/5 p-4 rounded-lg">
-          <div className="pb-4 pt-2">
-            <img className="w-full" src={imgUrl}
-            alt="label"/>
-            </div>
-        
-          <div className="text-white font-semibold py-3">{title}</div>
-          <div className="text-gray-500 text-sm">{description}</div>
-      
+    <div className="bg-black bg-opacity-40 w-1/5 p-4 rounded-lg">
+      <div className="pb-4 pt-2">
+        <img className="w-full" src={imgUrl} alt="label" />
       </div>
+      <div className="text-white font-semibold py-3">{title}</div>
+      <div className="text-gray-500 text-sm">{description}</div>
+    </div>
   );
+
 };
 
-export default LoggedInHomeComponent;
-
-//<img className="w-full rounded-md" src={imageUrl} alt="label" />
+  export default LoggedInHomeComponent;

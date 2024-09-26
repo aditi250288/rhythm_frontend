@@ -1,15 +1,35 @@
 import { useState, useEffect } from "react";
+// eslint-disable-next-line
+import {Howl, Howler} from 'howler';
 import image1 from "../assets/images/image1.png";
 import IconText from "../components/shared/iconText";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import TextWithHover from "../components/shared/textWithHover";
 import SingleSongCard from "../components/shared/SingleSongCard";
 import { makeAuthenticatedGETRequest } from "../utils/serverHelpers";
+//import TextInput from "../components/shared/textInput";
+//import CloudinaryUpload from "../components/shared/CloudinaryUpload";
 
+//delete folllowing commented code later
 // eslint-disable-next-line              
+
 const MyMusic = () => {
   // eslint-disable-next-line
   const [songData, setSongData] = useState([]);
+  const [soundPlayed, setSoundPlayed] = useState (null);
+
+  const playSound = (songSrc) => {
+    if (soundPlayed) {
+      soundPlayed.stop();
+    }
+
+    let newSound = new Howl({
+      src: [songSrc],
+      html5: true,
+    });
+    setSoundPlayed(newSound);
+    newSound.play();
+  };
 
   useEffect(()=>{
     //fetch data
@@ -17,9 +37,10 @@ const MyMusic = () => {
       const response = await makeAuthenticatedGETRequest (
         "/song/get/mysongs"
     );
-    console.log("API response:", response);
+    if (response && response.data){
+  
     setSongData(response.data);
-    
+    }
   };
   getData();
 
@@ -103,9 +124,14 @@ const MyMusic = () => {
           </div>
           {/* Add your content here */}
           <div className= "space-y-3">
-            {songData.map((item)=>{
-              return <SingleSongCard key ={item.id} info={item}/>;
-            })}
+            {songData.map((item)=>(
+              <SingleSongCard
+              key={item.id}
+              info={item} 
+              playSound={playSound}
+              
+              />
+            ))}
             
             </div>
         </div>
