@@ -1,11 +1,9 @@
 import { useState } from "react";
-import {useCookies} from "react-cookie";
-import { Icon } from "@iconify/react";
+import { useCookies } from "react-cookie";
 import TextInput from "../components/shared/textInput";
 import PasswordInput from "../components/shared/PasswordInput";
-import {Link, useNavigate} from "react-router-dom";
-import {makeUnauthenticatedPOSTRequest} from "../utils/serverHelpers";
-
+import { Link, useNavigate } from "react-router-dom";
+import { makeUnauthenticatedPOSTRequest } from "../utils/serverHelpers";
 
 const RegisterComponent = () => {
   const [email, setEmail] = useState("");
@@ -20,110 +18,99 @@ const RegisterComponent = () => {
 
   const register = async () => {
     if (email !== confirmEmail) {
-        alert(
-            "Email and confirm email fields must match. Please check again"
-        );
-        return;
+      alert("Email and confirm email fields must match. Please check again");
+      return;
     }
-    const data = {email, password, username, firstName, lastName};
-    const response = await makeUnauthenticatedPOSTRequest(
-        "/auth/register",
-        data
-    );
+    const data = { email, password, username, firstName, lastName };
+    const response = await makeUnauthenticatedPOSTRequest("/auth/register", data);
     if (response && !response.err) {
-      //console.log(response);
       const token = response.token;
       const date = new Date();
       date.setDate(date.getDate() + 30);
-      setCookie("token", token, {path: "/", expires: date});
+      setCookie("token", token, { path: "/", expires: date });
       alert("Success");
-
       navigate("/home");
     } else {
-        alert("Failure");
+      alert("Failure");
     }
-};
-    return (
-    <div className="w-full h-full flex flex-col items-center">
-         <div className="logo p-5 border-b border-solid border-grey-400 w-full flex justify-center">
-            <Icon icon="emojione-v1:musical-notes" width="150"/>
-        </div>
-        <div className="inputRegion w-1/3 py-10 flex items-center justify-center flex-col">
-        <div className="font-bold mb-4 text-2xl">
-            Register for free, to start listening
-            </div>
-        <TextInput 
-        label="Email address" 
-        placeholder="Please enter your email address."
-        className="my-6"
-        value={email}
-        setValue={setEmail}
-        />
-        
-        <TextInput 
-        label="Confirm email address" 
-        placeholder="Please confirm your email address."
-        className="mb-6"
-        value={confirmEmail}
-        setValue={setConfirmEmail}
-        />
-        
-        <TextInput 
-        label="Username" 
-        placeholder="Please enter the usename."
-        className="mb-6"
-        value={username}
-        setValue={setUsername}
-        />
+  };
 
+  return (
+    <div className="w-full h-screen flex items-center justify-center relative">
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D")`,
+        }}
+      >
+        <div className="absolute inset-0 bg-black opacity-10"></div>
+      </div>
+      
+      <div className="w-full max-w-lg p-6 rounded-lg bg-black bg-opacity-60 shadow-lg z-10">
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">Register for Rhythm</h2>
+        
+        <TextInput 
+          label="Email address" 
+          placeholder="Enter your email address"
+          className="mb-4"
+          value={email}
+          setValue={setEmail}
+        />
+        
+        <TextInput 
+          label="Confirm email address" 
+          placeholder="Confirm your email address"
+          className="mb-4"
+          value={confirmEmail}
+          setValue={setConfirmEmail}
+        />
+        
+        <TextInput 
+          label="Username" 
+          placeholder="Choose a username"
+          className="mb-4 text-white"
+          value={username}
+          setValue={setUsername}
+        />
+        
         <PasswordInput
-        label="Create Password" 
-        placeholder="Please enter a strong password."
-        className="mb-6"
+        label="Create Password"
+        placeholder="Enter a strong password"
+        className="mb-4 text-white"
         value={password}
         setValue={setPassword}
         />
         
-        <div className="w-full flex justify-center items-center space-x-8 p-5">
-          
-        <TextInput 
-        label="First Name" 
-        placeholder="Enter your Name."
-        className="my-6"
-        value={firstName}
-        setValue={setFirstName}
-        />
-        <TextInput 
-        label="Last Name" 
-        placeholder="Enter your Lastname. "
-        className="my-6"
-        value={lastName}
-        setValue={setLastName}
-        />
+        <div className="flex space-x-4 mb-4 text-white">
+          <TextInput 
+            label="First Name" 
+            placeholder="Enter your first name"
+            value={firstName}
+            setValue={setFirstName}
+          />
+          <TextInput 
+            label="Last Name" 
+            placeholder="Enter your last name"
+            value={lastName}
+            setValue={setLastName}
+          />
         </div>
 
-        <div className="w-full flex items-center justify-center my-8">
-          <button className="bg-blue-300 text-lg font-semibold p-3 px-10 rounded-full"
-          onClick={(e)=>{
-            e.preventDefault();
-            register();
-
-          }}
-          >
-            Register
-          </button>
+        <button
+          className="w-full bg-blue-400 text-white py-2 rounded-full font-semibold hover:bg-blue-500 transition duration-300 mt-4"
+          onClick={register}
+        >
+          Register
+        </button>
+        
+        <div className="mt-6 text-center">
+          <p className="text-gray-300">Already have an account?</p>
+          <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold">
+            Login to Rhythm
+          </Link>
         </div>
-      
-        <div className="w-full border border-solid border-grey-300"></div>
-        <div className="my-6 font-semibold text-lg">
-                    Already have an account?
-                </div>
-                <div className="border border-gray-500 text-gray-500 w-full flex items-center justify-center py-4 rounded-full font-bold">
-                 <Link to="/login">Login</Link>
-                </div>
-        </div>
+      </div>
     </div>
-
   );
 };
 

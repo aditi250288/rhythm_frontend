@@ -1,304 +1,81 @@
-import {useState} from "react";
-// eslint-disable-next-line
-import {Howl, Howler} from 'howler';
-import image1 from "../assets/images/image1.png";
-import IconText from "../components/shared/iconText";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import React from "react";
+import LoggedInContainer from "../containers/LoggedInContainer";
+import SpotifyWebApi from 'spotify-web-api-js';
+// eslint-disable-next-line no-unused-vars
 import TextWithHover from "../components/shared/textWithHover";
+// eslint-disable-next-line no-unused-vars
+const spotifyApi = new SpotifyWebApi();
 
 const focusCardsData = [
   {
-      title: "Peaceful Piano",
-      description: "Relax and indulge with beautiful piano pieces",
-      imgUrl: "https://images.unsplash.com/photo-1517578099694-8b23adec837c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    title: "Peaceful Piano",
+    description: "Relax and indulge with beautiful piano pieces",
+    imgUrl: "https://images.unsplash.com/photo-1517578099694-8b23adec837c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
-  {
-      title: "Deep Focus",
-      description: "Keep calm and focus with this music",
-      imgUrl: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-      title: "Instrumental Study",
-      description: "Focus with soft study music in the background.",
-      imgUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-      title: "Focus Flow",
-      description: "Up tempo instrumental hip hop beats",
-      imgUrl: "https://images.unsplash.com/photo-1524578471438-cdd96d68d82c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-      title: "Beats to think to",
-      description: "Focus with deep techno and tech house",
-      imgUrl: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
+  // ... (other focus cards data)
 ];
 
+// eslint-disable-next-line no-unused-vars
 const rhythmPlaylistsCardData = [
   {
-      title: "Relax and listen",
-      description: "Relaxing songs",
-      imgUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1546&q=80",
+    title: "Relax and listen",
+    description: "Relaxing songs",
+    imgUrl: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1546&q=80",
   },
-  {
-      title: "Heartbreak",
-      description: "Slow songs with great music",
-      imgUrl: "https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1766&q=80",
-  },  
-  {
-      title: "Happy Happy",
-      description: "Light hiphop songs",
-      imgUrl: "https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80",
-  },
-  {
-      title: "Rock",
-      description: "Rock music",
-      imgUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80",
-  },
-  {
-      title: "Classic",
-      description: "old musical melodies",
-      imgUrl: "https://plus.unsplash.com/premium_photo-1682125816787-4db071ef2da8?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
+  // ... (other rhythm playlists data)
 ];
 
+// eslint-disable-next-line no-unused-vars
 const SoundOfIndiaCardsData = [
   {
-      title: "Soul of India",
-      description: "Songs which touches your heart",
-      imgUrl: "https://images.unsplash.com/photo-1633411988188-6e63354a9019?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    title: "Soul of India",
+    description: "Songs which touches your heart",
+    imgUrl: "https://images.unsplash.com/photo-1633411988188-6e63354a9019?q=80&w=1931&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
-  {
-      title: "Bollywood Bash",
-      description: "Slow songs with great music",
-      imgUrl: "https://images.unsplash.com/photo-1461784229652-c9271a46d4c4?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-      title: "My Marathi",
-      description: "Enjoy regional language",
-      imgUrl: "https://images.unsplash.com/photo-1483032469466-b937c425697b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-      title: "Old Melodies",
-      description: "Rock music",
-      imgUrl: "https://images.unsplash.com/photo-1510511450816-30c68106b199?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-      title: "90's Classic hits",
-      description: "old musical melodies",
-      imgUrl: "https://plus.unsplash.com/premium_photo-1682125893394-7372df580472?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
+  // ... (other Sound of India cards data)
 ];
 
-const LoggedInHomeComponent = () => {
-  const [soundPlayed, setSoundPlayed] = useState (null);
-   // eslint-disable-next-line
-  const[isPaused, setIsPaused] = useState (true);
-// eslint-disable-next-line
-  const playSound = (songSrc) => {
-    if (soundPlayed) {
-      soundPlayed.stop();
-    }
-    let newSound = new Howl({
-      src: [songSrc],
-      html5: true,
-    });
-    setSoundPlayed(newSound);
-    newSound.play();
-  };
-  const pauseSound = ()=>{
-    soundPlayed.pause();
-  }
-   // eslint-disable-next-line
-  const togglePlayPause = () => {
-    if (isPaused) {
-      if (!soundPlayed) {
-        playSound (
-          "https://res.cloudinary.com/dlkl4ek0w/video/upload/v1727242819/xqtcpynozqp0nd9zidrt.mp3"
-        );
-      } else {
-        soundPlayed.play();
-    }
-    setIsPaused(false);
-  } else {
-    pauseSound();
-    setIsPaused(true);
-  }
-}
+const LoggedInHome = () => {
   return (
-    <div className="h-full w-full bg-app-black">
-      <div className="h-9/10 w-full flex">
-      
-      {/* This first div will be the left panel */}
-      
-      <div className="h-full w-1/5 bg-black flex flex-col justify-between pb-10">
-        {/* This div is for logo */}
-        <div>
-          <div className="logoDiv p-6">
-            <img 
-            src={image1} 
-            alt="rhythm logo" 
-            width={500} />
-          </div>
-          <div className="py-2">
-            <IconText
-              iconName={"material-symbols:home"}
-              displayText={"Home"}
-              active
-            />
-            <IconText
-              iconName={"material-symbols:search-rounded"}
-              displayText={"Search"}
-            />
-            <IconText iconName={"icomoon-free:books"} 
-            displayText={"Library"} 
-            />
-            <IconText iconName={"material-symbols:library-music-rounded"} 
-            displayText={"My Music"} 
-            />
-          </div>
-          <div className="pt-5">
-            <IconText
-              iconName={"material-symbols:add-box"}
-              displayText={"Create Playlist"}
-            />
-            <IconText
-              iconName={"mdi:cards-heart"}
-              displayText={"Liked Songs"}
-            />
-          </div>
-        </div>
-        <div className="px-5">
-          <div className="border border-gray-100 text-white w-2/5 flex px-2 py-1 rounded-full items-center justify-center hover:border-white cursor-pointer">
-            <Icon icon="carbon:earth-europe-africa" />
-            <div className="ml- text-sm font-semibold pt-1">English</div>
-          </div>
-        </div>
-      </div>
-
-      {/* This second div will be the right part(main content) */}
-      <div className="h-full w-4/5 bg-app-black overflow-auto">
-        <div className="navbar w-full h-1/10 bg-black bg-opacity-30 flex items-center justify-end">
-          <div className="w-1/2 flex h-full">
-            <div className="w-3/5 flex justify-around items-center">
-              <TextWithHover displayText={"Premium"} />
-              <TextWithHover displayText={"Support"} />
-              <TextWithHover displayText={"Download"} />
-              <div className="h-2/3 border-r border-white"></div>
+    <LoggedInContainer curActiveScreen="home">
+      <div className="content p-8">
+        <div className="text-2xl font-bold mb-4">Focus</div>
+        <div className="grid grid-cols-5 gap-4">
+          {focusCardsData.map((card, index) => (
+            <div key={index} className="bg-black p-4 rounded-lg">
+              <img src={card.imgUrl} alt={card.title} className="w-full h-40 object-cover rounded-lg mb-2" />
+              <div className="text-white font-semibold">{card.title}</div>
+              <div className="text-gray-400 text-sm">{card.description}</div>
             </div>
-            <div className="w-2/5 flex justify-around h-full items-center">
-              <TextWithHover displayText={"Upload Songs"} />
-              <div className="bg-white h-1/2 p-2 flex items-center justify-center rounded-full font-semibold cursor-pointer">
-                Aditi
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
-
-        <div className="content p-8 pt-0 overflow-auto">
-          <PlaylistView 
-          titleText="Focus" 
-          cardsData={focusCardsData} />
-          <PlaylistView
-          titleText="Rhythm Playlists"
-          cardsData={rhythmPlaylistsCardData}
-          />
-          <PlaylistView 
-          titleText="Sound of India" 
-          cardsData={SoundOfIndiaCardsData} />
-        </div>
-      </div>
-    </div>
-
-      {/*this div is current playing song*/}
-      <div className="w-full h-1/10 bg-app-black bg-opacity-30 text-white flex items-center px-4">
-      <div className="w-1/4 flex items-center"> 
-      <img 
-      src= "https://images.unsplash.com/photo-1513689125086-6c432170e843?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
-      alt="currentSongThumbnail"
-      className="h-14 w-14 rounded"
-      />
-      <div className="pl-4">
-      <div className="text-sm hover:underline cursor-pointer">Moh moh ke dhage</div>
-      <div className="text-xs text-gray-500 hover:underline cursor-pointer">Papon</div>
-      
-      </div>
-      </div>
-      <div className="w-1/2 flex justify-center h-full flex-col items-center">
-      <div className="flex w-1/3 justify-between items-center">
-        {/*controls for the playing songs will go here*/}
-        <Icon 
-        icon="fluent:arrow-shuffle-32-filled" 
-        fontSize={30} 
-        className="cursor-pointer text-gray-500 hover:text-white"
-        />
-        <Icon 
-        icon="fluent:previous-16-filled" 
-        fontSize={30} 
-        className="cursor-pointer text-gray-500 hover:text-white"
-        />
-        <Icon 
-        icon={isPaused ? "mdi:play-box":"mdi:pause-box"}
-        fontSize={40} 
-        className="cursor-pointer text-gray-500 hover:text-white"
-        onClick={togglePlayPause}
-        />
-        <Icon 
-        icon="fluent:next-16-filled" 
-        fontSize={30} 
-        className="cursor-pointer text-gray-500 hover:text-white"
-        />
-        <Icon 
-        icon="pepicons-pop:repeat" 
-        fontSize={30} 
-        className="cursor-pointer text-gray-500 hover:text-white"
-        />
         
-      </div>
-      {/*<div>progress bar here</div>*/}
+        {/* Rhythm Playlists Section */}
+        <div className="text-2xl font-bold mb-4 mt-8">Rhythm Playlists</div>
+        <div className="grid grid-cols-5 gap-4">
+          {rhythmPlaylistsCardData.map((card, index) => (
+            <div key={index} className="bg-black p-4 rounded-lg">
+              <img src={card.imgUrl} alt={card.title} className="w-full h-40 object-cover rounded-lg mb-2" />
+              <div className="text-white font-semibold">{card.title}</div>
+              <div className="text-gray-400 text-sm">{card.description}</div>
+            </div>
+          ))}
+        </div>
 
+        {/* Sound of India Section */}
+        <div className="text-2xl font-bold mb-4 mt-8">Sound of India</div>
+        <div className="grid grid-cols-5 gap-4">
+          {SoundOfIndiaCardsData.map((card, index) => (
+            <div key={index} className="bg-black p-4 rounded-lg">
+              <img src={card.imgUrl} alt={card.title} className="w-full h-40 object-cover rounded-lg mb-2" />
+              <div className="text-white font-semibold">{card.title}</div>
+              <div className="text-gray-400 text-sm">{card.description}</div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="w-1/4 flex justify-end">Hello</div>
-    </div>
-  </div>
-
+    </LoggedInContainer>
   );
 };
 
-const PlaylistView = ({ titleText, cardsData }) => {
-  return (
-    <div className="text-white mt-8">
-      <div className="text-2xl font-semibold mb-5">{titleText}</div>
-      <div className="w-full flex justify-between space-x-4">
-        {
-          // cardsData will be an array
-          cardsData.map((item, index) => {
-            return (
-              <Card
-              key={item.id || index}
-              title={item.title}
-              description={item.description}
-              imgUrl={item.imgUrl}
-              />
-            );
-          })
-        }
-      </div>
-    </div>
-  );
-};
-
-const Card = ({ title, description, imgUrl }) => {
-  return (
-    <div className="bg-black bg-opacity-40 w-1/5 p-4 rounded-lg">
-      <div className="pb-4 pt-2">
-        <img className="w-full" src={imgUrl} alt="label" />
-      </div>
-      <div className="text-white font-semibold py-3">{title}</div>
-      <div className="text-gray-500 text-sm">{description}</div>
-    </div>
-  );
-
-};
-
-  export default LoggedInHomeComponent;
+export default LoggedInHome;
