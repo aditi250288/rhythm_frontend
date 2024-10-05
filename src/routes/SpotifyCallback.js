@@ -13,7 +13,7 @@ const SpotifyCallback = () => {
     if (code) {
       // Send this code to your backend
       fetch('http://localhost:5000/api/spotify/callback', {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },

@@ -1,4 +1,10 @@
-import React, {useContext, useState, useEffect, useLayoutEffect, useRef} from "react";
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
 // eslint-disable-next-line
 import { useCookies } from "react-cookie";
 import { Howl } from "howler";
@@ -10,7 +16,10 @@ import TextWithHover from "../components/shared/textWithHover";
 import songContext from "../contexts/songContext";
 import CreatePlaylistModal from "../modals/createPlaylistModal";
 import AddToPlaylistModal from "../modals/addToPlaylistModal";
-import { makeAuthenticatedPOSTRequest } from "../utils/serverHelpers";
+import {
+  makeAuthenticatedPOSTRequest,
+  makeAuthenticatedGETRequest,
+} from "../utils/serverHelpers";
 
 const LoggedInContainer = ({ children, curActiveScreen }) => {
   const navigate = useNavigate();
@@ -20,6 +29,8 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
   const navigateToMyMusic = () => navigate("/myMusic");
   const [createPlaylistModalOpen, setCreatePlaylistModalOpen] = useState(false);
   const [addToPlaylistModalOpen, setAddToPlaylistModalOpen] = useState(false);
+  // eslint-disable-next-line
+  const [playlist, setPlaylist] = useState([]);
   const [isShuffleOn, setIsShuffleOn] = useState(false);
   const [isRepeatOn, setIsRepeatOn] = useState(false);
   // eslint-disable-next-line
@@ -28,19 +39,36 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   // eslint-disable-next-line no-unused-vars
   const REDIRECT_URI = process.env.REACT_APP_SPOTIFY_REDIRECT_URI;
+  //const [currentTime, setCurrentTime] = useState(0);
+  //const [songDuration, setSongDuration] = useState(0);
+
+  // Function to fetch playlists
+  const fetchPlaylist = async () => {
+    try {
+      const response = await makeAuthenticatedGETRequest("/api/playlist/get/me");
+      setPlaylist(response.data);
+    } catch (error) {
+      console.error("Error fetching playlists:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlaylist(); // Fetch playlists when the component mounts
+  }, []);
 
   const handleSpotifyLogin = async () => {
     const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
     const REDIRECT_URI = process.env.REACT_APP_SPOTIFY_REDIRECT_URI;
     const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
     const RESPONSE_TYPE = "code";
-    const SCOPE = "streaming user-read-email user-read-private user-library-read user-library-modify user-read-playback-state user-modify-playback-state";
-  
+    const SCOPE =
+      "streaming user-read-email user-read-private user-library-read user-library-modify user-read-playback-state user-modify-playback-state";
+
     const state = generateRandomString(16);
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     localStorage.setItem("code_verifier", codeVerifier);
-  
+
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
       response_type: RESPONSE_TYPE,
@@ -50,31 +78,32 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
       code_challenge_method: "S256",
       code_challenge: codeChallenge,
     });
-  
+
     window.location.href = `${AUTH_ENDPOINT}?${params.toString()}`;
   };
 
   function generateRandomString(length) {
-    let text = '';
-    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  
+    let text = "";
+    let possible =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
     for (let i = 0; i < length; i++) {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
   }
-  
+
   function generateCodeVerifier() {
     return generateRandomString(128);
   }
-  
+
   async function generateCodeChallenge(codeVerifier) {
     const data = new TextEncoder().encode(codeVerifier);
-    const digest = await window.crypto.subtle.digest('SHA-256', data);
+    const digest = await window.crypto.subtle.digest("SHA-256", data);
     return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
   }
 
   const {
@@ -93,6 +122,8 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
 
   useEffect(() => {
     const token = cookies.spotifyToken;
+    console.log("Spotify Token:", token);
+
     if (token) {
       setSpotifyConnected(true);
       // You might want to validate the token here or set up Spotify API
@@ -196,9 +227,16 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
   };
 
   // eslint-disable-next-line no-unused-vars
-  
+
   return (
     <div className="h-full w-full bg-app-black">
+      {createPlaylistModalOpen && (
+        <CreatePlaylistModal
+          closeModal={() => {
+            setCreatePlaylistModalOpen(false);
+          }}
+        />
+      )}
       <div className="h-9/10 w-full flex">
         {/* Left sidebar */}
         <div className="h-full w-1/5 bg-black flex flex-col justify-between pb-10">
@@ -251,7 +289,7 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
             </div>
           </div>
         </div>
-        <div className="h-full w-4/5 bg-app-black overflow-auto">
+        <div className="h-full w-4/5 bg-app-black overflow-y-auto">
           <div className="navbar w-full h-1/10 bg-black bg-opacity-30 flex items-center justify-end">
             <div className="w-1/2 flex h-full">
               <div className="w-3/5 flex justify-around items-center">
@@ -265,7 +303,7 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
                 ) : (
                   <span className="text-white">Connected to Spotify</span>
                 )}
-                <TextWithHover displayText={"Download"} />
+                <TextWithHover displayText={"LogOut"} />
                 <div className="h-1/2 border-r border-white"></div>
               </div>
               <div className="w-2/5 flex justify-around h-full items-center">
@@ -293,7 +331,7 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
             />
             <div className="pl-4">
               <div className="text-sm hover:underline cursor-pointer">
-                {currentSong.name}
+                {currentSong.title}
               </div>
               <div className="text-xs text-gray-500 hover:underline cursor-pointer">
                 {currentSong.artist.firstName +
@@ -345,11 +383,7 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
           </div>
         </div>
       )}
-      {createPlaylistModalOpen && (
-        <CreatePlaylistModal
-          closeModal={() => setCreatePlaylistModalOpen(false)}
-        />
-      )}
+      
       {addToPlaylistModalOpen && (
         <AddToPlaylistModal
           closeModal={() => setAddToPlaylistModalOpen(false)}

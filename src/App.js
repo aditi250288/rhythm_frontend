@@ -5,6 +5,7 @@ import LoginComponent from "./routes/login";
 import RegisterComponent from "./routes/register";
 // eslint-disable-next-line
 import HomeComponent from "./routes/home";
+import { makeAuthenticatedGETRequest } from "./utils/serverHelpers";
 import LoggedInHomeComponent from "./routes/LoggedInHome";
 import UploadSongs from "./routes/UploadSongs";
 import MyMusic from "./routes/MyMusic";
@@ -14,6 +15,7 @@ import songContext from "./contexts/songContext";
 import SpotifyCallback from "./routes/SpotifyCallback";
 import SpotifyPlayer from "./routes/SpotifyPlayer";
 import ForgotPasswordComponent from "./routes/forgotPasswordComponent";
+import Library from './routes/Library';
 
 
 function App() {
@@ -23,7 +25,12 @@ function App() {
   const [songData, setSongData] = useState([]);
   // eslint-disable-next-line
   const [cookie, setCookie] = useCookies(["token"]);
+  const [playlists, setPlaylists] = useState([]);
 
+  const updatePlaylists = async () => {
+    const response = await makeAuthenticatedGETRequest("/playlist/get/me");
+    setPlaylists(response);
+  };
 
   return (
     <div className="w-screen h-screen font-poppins">
@@ -45,8 +52,10 @@ function App() {
             <Routes>
               <Route path="/" element={<HelloComponent />} />
               <Route path="/home" element={<LoggedInHomeComponent />} />
+              <Route path="/forgot-password" element={<ForgotPasswordComponent />} />
               <Route path="/uploadSongs" element={<UploadSongs />} />
               <Route path="/myMusic" element={<MyMusic />} />
+              <Route path="/library" element={<Library playlists={playlists} updatePlaylists={updatePlaylists} />} />
               <Route path="/callback" element={<SpotifyCallback />} />
               <Route path="/spotify-player" element={<SpotifyPlayer />} />
               <Route path="/searchPage" element={<SearchPage />} />

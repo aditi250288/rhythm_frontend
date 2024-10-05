@@ -6,25 +6,45 @@ import { makeUnauthenticatedPOSTRequest } from "../utils/serverHelpers";
 
 const ForgotPasswordComponent = () => {
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   const handleForgotPassword = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+
     if (!email) {
-      alert("Please enter your email address.");
+      setErrorMessage("Please enter your email address.");
       return;
     }
+
+    if (!validateEmail(email)) {
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const response = await makeUnauthenticatedPOSTRequest("/auth/forgot-password", { email });
       if (response && !response.err) {
-        alert("Password reset instructions have been sent to your email.");
-        navigate("/login");
+        setSuccessMessage("Password reset instructions have been sent to your email.");
+        setEmail(""); // Clear the email input after successful submission
       } else {
-        alert("An error occurred. Please try again.");
+        setErrorMessage(response.err || "An error occurred. Please try again.");
       }
     } catch (error) {
       console.error("Error sending forgot password email:", error);
-      alert("An error occurred. Please try again.");
+      setErrorMessage("An unexpected error occurred. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -44,19 +64,27 @@ const ForgotPasswordComponent = () => {
           <Icon icon="emojione-v1:musical-notes" width="80" className="text-blue-500" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-6 text-center">Forgot Password</h2>
+        
         <TextInput
           label="Email address"
           placeholder="Enter your email"
-          className="mb-4 text-gray"
+          className="mb-4 text-white"
           value={email}
           setValue={setEmail}
         />
+        
+        {/* Display loading, success, and error messages */}
+        {isLoading && <p className="text-yellow-500 mb-4">Sending reset instructions...</p>}
+        {successMessage && <p className="text-green-500 mb-4">{successMessage}</p>}
+        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
+        
         <button
           className="w-full bg-blue-400 text-white py-2 rounded-full font-semibold hover:bg-blue-500 transition duration-300"
           onClick={handleForgotPassword}
         >
           Send Reset Email
         </button>
+        
         <button
           onClick={() => navigate("/login")}
           className="w-full mt-4 text-blue-400 hover:text-blue-300"

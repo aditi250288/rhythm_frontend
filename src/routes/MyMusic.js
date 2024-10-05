@@ -9,9 +9,13 @@ const MyMusic = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await makeAuthenticatedGETRequest("/song/get/mysongs");
-      if (response && response.data) {
-        setSongData(response.data);
+      try {
+        const response = await makeAuthenticatedGETRequest("/api/song/get/mysongs");
+        if (response && response.data) {
+          setSongData(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching songs:", error);
       }
     };
     getData();
