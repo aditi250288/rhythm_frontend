@@ -28,6 +28,7 @@ export const makeAuthenticatedPOSTRequest = async (route, body) => {
       throw new Error("No authentication token found");
     }
     const url = `${backendUrl}${route}`;
+    
     const response = await fetch(url, {
       method: "POST",
       headers: {

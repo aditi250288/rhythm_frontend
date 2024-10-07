@@ -12,6 +12,7 @@ import MyMusic from "./routes/MyMusic";
 import SearchPage from "./routes/SearchPage";
 import { useCookies } from "react-cookie";
 import songContext from "./contexts/songContext";
+import SinglePlaylistView from './routes/SinglePlaylistView';
 import SpotifyCallback from "./routes/SpotifyCallback";
 import SpotifyPlayer from "./routes/SpotifyPlayer";
 import ForgotPasswordComponent from "./routes/forgotPasswordComponent";
@@ -55,6 +56,7 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPasswordComponent />} />
               <Route path="/uploadSongs" element={<UploadSongs />} />
               <Route path="/myMusic" element={<MyMusic />} />
+               <Route path="/playlist/:playlistId" element={<SinglePlaylistView />} />
               <Route path="/library" element={<Library playlists={playlists} updatePlaylists={updatePlaylists} />} />
               <Route path="/callback" element={<SpotifyCallback />} />
               <Route path="/spotify-player" element={<SpotifyPlayer />} />

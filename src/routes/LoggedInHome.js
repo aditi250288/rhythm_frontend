@@ -38,7 +38,7 @@ const SoundOfIndiaCardsData = [
 const LoggedInHome = () => {
   return (
     <LoggedInContainer curActiveScreen="home">
-      <div className="content p-8">
+      <div className="content p-8 text-white">
         <div className="text-2xl font-bold mb-4">Focus</div>
         <div className="grid grid-cols-5 gap-4">
           {focusCardsData.map((card, index) => (

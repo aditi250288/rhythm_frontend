@@ -45,8 +45,10 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
   // Function to fetch playlists
   const fetchPlaylist = async () => {
     try {
-      const response = await makeAuthenticatedGETRequest("/api/playlist/get/me");
-      setPlaylist(response.data);
+      const response = await makeAuthenticatedGETRequest(
+        "/api/playlist/get/me"
+      );
+      setPlaylist(response.data.data);
     } catch (error) {
       console.error("Error fetching playlists:", error);
     }
@@ -147,7 +149,7 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
     const songId = currentSong._id;
     const payload = { playlistId, songId };
     const response = await makeAuthenticatedPOSTRequest(
-      "/playlist/add/song",
+      "/api/playlist/add/song",
       payload
     );
     if (response._id) {
@@ -237,6 +239,15 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
           }}
         />
       )}
+
+      {addToPlaylistModalOpen && (
+        <AddToPlaylistModal
+          closeModal={() => setAddToPlaylistModalOpen(false)}
+          addSongToPlaylist={addSongToPlaylist}
+          current SongId={currentSong ? currentSong._id : null}
+        />
+      )}
+
       <div className="h-9/10 w-full flex">
         {/* Left sidebar */}
         <div className="h-full w-1/5 bg-black flex flex-col justify-between pb-10">
@@ -378,17 +389,23 @@ const LoggedInContainer = ({ children, curActiveScreen }) => {
               />
             </div>
           </div>
-          <div className="w-1/4 flex justify-end">
+          <div className="w-1/4 flex justify-end text-white pr-4 space-x-4 item-center">
+            <Icon
+              icon="mdi:playlist-plus"
+              fontSize={30}
+              className="cursor-poiner text-gray-500 hover:text-white"
+              onClick={()=>{
+              setAddToPlaylistModalOpen(true);
+              }}
+            />
+            <Icon
+              icon="icon-park-solid:like"
+              fontSize={30}
+              className="cursor-poiner text-gray-500 hover:text-white"
+            />
             {/* Add volume controls or additional features here */}
           </div>
         </div>
-      )}
-      
-      {addToPlaylistModalOpen && (
-        <AddToPlaylistModal
-          closeModal={() => setAddToPlaylistModalOpen(false)}
-          addSongToPlaylist={addSongToPlaylist}
-        />
       )}
     </div>
   );
